@@ -3,6 +3,8 @@ import logging
 import secrets
 import sys
 import os
+import requests
+
 from datetime import datetime, timedelta
 from typing import Dict, List, Tuple, Any, Union
 import pytz
@@ -1402,9 +1404,18 @@ async def command_check_handler(message: Message) -> None:
             f"📚 List of pending borrowings (Page 1):",
             reply_markup=create_pending_borrowings_keyboard(pending_borrowings, 0)
         )
+
+ESP_IP = "192.168.0.14"
+
 async def handle_open(message: Union[Message, CallbackQuery]) -> None:
-    """Shared handler for open command and callback"""
-    text = "In the future, this command will notify us that we need to open the Startup Sauna door."
+    """Handler for communicating with an esp to control a light in the coworking space"""
+    text = "The light should be blinking now, lets hope someone comes to let you in."
+    try:
+        r = requests.get(f"http://{ESP_IP}/door", timeout=5)
+        text += f"\n{r.text}"
+    except Exception as e:
+        text += f"\nFailed to reach the ESP: {e} \n Sorry for that"
+
     if isinstance(message, Message):
         await message.answer(text)
     else:
