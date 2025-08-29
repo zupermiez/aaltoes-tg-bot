@@ -1408,17 +1408,23 @@ ESP_IP = "192.168.1.184"
 
 async def handle_open(message: Union[Message, CallbackQuery]) -> None:
     """Handler for communicating with an esp to control a light in the coworking space"""
-    text = "The light should be blinking now, lets hope someone comes to let you in."
-    try:
-        r = requests.get(f"http://{ESP_IP}/door", timeout=5)
-        text += f"\n{r.text}"
-    except Exception as e:
-        text += f"\nFailed to reach the ESP: {e} \n Sorry for that"
-
+    
+    text = "Connecting..."
     if isinstance(message, Message):
         await message.answer(text)
     else:
         await message.message.answer(text)
+
+    try:
+        r = requests.get(f"http://{ESP_IP}/door", timeout=5)
+        response = f"{r.text}"
+    except Exception as e:
+        response = f"\nFailed to reach the ESP: {e} \n Sorry for that"
+
+    if isinstance(message, Message):
+        await message.answer(response)
+    else:
+        await message.message.answer(response)
 
 @dp.callback_query(F.data.startswith("action_open_sauna"))
 async def open_callback_handler(callback: CallbackQuery) -> None:
