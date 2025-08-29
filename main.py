@@ -4,7 +4,6 @@ import secrets
 import sys
 import os
 import requests
-
 from datetime import datetime, timedelta
 from typing import Dict, List, Tuple, Any, Union
 import pytz
@@ -1405,7 +1404,7 @@ async def command_check_handler(message: Message) -> None:
             reply_markup=create_pending_borrowings_keyboard(pending_borrowings, 0)
         )
 
-ESP_IP = "192.168.0.14"
+ESP_IP = "192.168.1.184"
 
 async def handle_open(message: Union[Message, CallbackQuery]) -> None:
     """Handler for communicating with an esp to control a light in the coworking space"""
