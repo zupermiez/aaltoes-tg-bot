@@ -1,10 +1,14 @@
 #include <WiFi.h>
 #include <WebServer.h>
 
-const char* ssid = "xxxxxxxxx";
-const char* password = "xxxxxxxxxxxxxxxxx";
-
 #define DOOR_PIN 13
+#define RGB_BUILTIN 48
+#define RGB_BRIGHTNESS 25  // 0–255
+
+const char* ssid = "xxxxxxx";
+const char* password = "xxxxxxxxxx";
+
+
 IPAddress local_IP(192, 168, 1, 184);
 IPAddress gateway(192, 168, 1, 1);
 IPAddress subnet(255, 255, 0, 0);
@@ -25,19 +29,32 @@ void setup() {
   pinMode(DOOR_PIN, OUTPUT);
   digitalWrite(DOOR_PIN, LOW);
   Serial.begin(115200);
+
   if (!WiFi.config(local_IP, gateway, subnet)) {
-  Serial.println("Failed to setup static IP");
-}
+    Serial.println("STA Failed to configure");
+  }
 
   WiFi.begin(ssid, password);
+
+
   while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
     Serial.print(".");
+    neopixelWrite(RGB_BUILTIN, RGB_BRIGHTNESS, 0, 0);  // red
+    delay(500);
+    neopixelWrite(RGB_BUILTIN, 0, 0, 0);  // off
+    delay(500);
   }
+
   Serial.println(WiFi.localIP());
 
   server.on("/door", handleDoor);
   server.begin();
+
+  neopixelWrite(RGB_BUILTIN, 0, RGB_BRIGHTNESS, 0);
+  delay(200);
+  neopixelWrite(RGB_BUILTIN, 0, 0, 0);
+
+
 }
 
 void loop() {
